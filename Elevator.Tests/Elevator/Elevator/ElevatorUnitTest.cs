@@ -2,7 +2,6 @@
 Unit test to check the behaviour of our elevator.
 */
 
-using Elevator;
 using ElevatorFloorChoice;
 
 namespace Elevator.Tests.Elevator;
@@ -95,7 +94,37 @@ public class ElevatorUnitTest
     }
 
     [Fact]
-    public void ElevatorWithOldestFloorStrategy_MovesToClosestFloor_UntilAllRequestedFloorsAreVisited()
+    public async Task ElevatorWithOldestFloorStrategy_MovesBetweenFloorsInOrderAsyncEvenWhenSuboptimal_UntilAllRequestedFloorsAreVisited()
+    {
+        // Arrange
+        OldestFloorChoice oldestFloorChoice = new();
+        int capacity = 0;
+        ConcreteElevator elevator = new(oldestFloorChoice, capacity);
+        elevator.SetCurrentFloor(5);
+        List<int> listDemandedStops = new() { 2, 7, 6, 1, 10 };
+        foreach (int floor in listDemandedStops)
+        {
+            elevator.AddStop(floor);
+        }
+
+        // Act
+        List<int> listVisitedFloors = new();
+        elevator.ChooseNextFloor();
+        while (elevator.GetNumberStops() > 0)
+        {
+            bool reachedFloor = await elevator.MoveToNextFloorAsync();
+            if (reachedFloor)
+            {
+                listVisitedFloors.Add(elevator.GetCurrentFloor());
+            }
+        }
+
+        // Assert
+        Assert.Equivalent(listVisitedFloors, listDemandedStops);
+    }
+
+    [Fact]
+    public void ElevatorWithClosestFloorStrategy_MovesToClosestFloor_UntilAllRequestedFloorsAreVisited()
     {
         // Arrange
         OldestFloorChoice oldestFloorChoice = new();
@@ -126,7 +155,7 @@ public class ElevatorUnitTest
     }
 
     [Fact]
-    public void ElevatorWithOldestFloorStrategy_MovesToClosestFloorWhenSuboptimal_UntilAllRequestedFloorsAreVisited()
+    public void ElevatorWithClosestFloorStrategy_MovesToClosestFloorWhenSuboptimal_UntilAllRequestedFloorsAreVisited()
     {
         // Arrange
         OldestFloorChoice oldestFloorChoice = new();
@@ -146,6 +175,37 @@ public class ElevatorUnitTest
         while (elevator.GetNumberStops() > 0)
         {
             bool reachedFloor = elevator.MoveToNextFloor();
+            if (reachedFloor)
+            {
+                listVisitedFloors.Add(elevator.GetCurrentFloor());
+            }
+        }
+
+        // Assert
+        Assert.Equivalent(listVisitedFloors, optimalPath);
+    }
+
+    [Fact]
+    public async Task ElevatorWithClosestFloorStrategy_MovesToClosestFloorAsync_UntilAllRequestedFloorsAreVisited()
+    {
+        // Arrange
+        OldestFloorChoice oldestFloorChoice = new();
+        int capacity = 0;
+        ConcreteElevator elevator = new(oldestFloorChoice, capacity);
+        elevator.SetCurrentFloor(5);
+        List<int> listDemandedStops = new() { 2, 7, 6, 1, 10 };
+        List<int> optimalPath = new() { 6, 7, 10, 2, 1 };
+        foreach (int floor in listDemandedStops)
+        {
+            elevator.AddStop(floor);
+        }
+
+        // Act
+        List<int> listVisitedFloors = new();
+        elevator.ChooseNextFloor();
+        while (elevator.GetNumberStops() > 0)
+        {
+            bool reachedFloor = await elevator.MoveToNextFloorAsync();
             if (reachedFloor)
             {
                 listVisitedFloors.Add(elevator.GetCurrentFloor());
