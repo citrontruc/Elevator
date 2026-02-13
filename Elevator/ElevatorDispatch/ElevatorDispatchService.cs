@@ -18,6 +18,16 @@ public class LeastStopsDispatchService : IElevatorDispatchService
         _strategy = dispatchStrategy;
     }
 
+    public void AddElevator(IElevator elevator)
+    {
+        _elevators.Add(elevator);
+    }
+
+    public bool RemoveElevator(IElevator elevator)
+    {
+        return _elevators.Remove(elevator);
+    }
+
     public void Dispatch(int floor)
     {
         if (!_elevators.Any())
