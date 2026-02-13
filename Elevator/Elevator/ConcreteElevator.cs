@@ -61,6 +61,16 @@ public class ConcreteElevator : IElevator
         _currentFloor = floor;
     }
 
+    public void SetTargetFloor(int floor)
+    {
+        _targetFloor = floor;
+    }
+
+    public bool CheckIfExpectedStop(int floor)
+    {
+        return _listFloors.Contains(floor);
+    }
+
     public void AddStop(int floorValue)
     {
         _listFloors.Add(floorValue);

@@ -8,31 +8,7 @@ namespace Elevator.Tests.Elevator;
 
 public class ElevatorUnitTest
 {
-    [Fact]
-    public void Elevator_CanTakeNoMorePassengersThanCapacity()
-    {
-        // Arrange
-        OldestFloorChoice oldestFloorChoice = new();
-        int capacity = 5;
-        ConcreteElevator elevator = new(oldestFloorChoice, capacity);
-
-        // Act
-        Passenger passenger = new() { RequestedFloor = 0 };
-        List<bool> listAnswer = new();
-        for (int i = 0; i < capacity; i++)
-        {
-            listAnswer.Add(elevator.EmbarkPassengers(passenger));
-        }
-        bool overCapacity = elevator.EmbarkPassengers(passenger);
-
-        // Assert
-        for (int i = 0; i < capacity; i++)
-        {
-            Assert.True(listAnswer[i]);
-        }
-        Assert.False(overCapacity);
-    }
-
+    #region Floor handling
     [Fact]
     public void ElevatorWithOldestFloorStrategy_MovesBetweenFloorsInOrder_UntilAllRequestedFloorsAreVisited()
     {
@@ -215,7 +191,9 @@ public class ElevatorUnitTest
         // Assert
         Assert.Equivalent(listVisitedFloors, optimalPath);
     }
+    #endregion
 
+    #region Passenger handling
     [Fact]
     public void Elevator_WhenTheFloorIsReached_OnlyConcernedPassengersDisembark()
     {
@@ -236,4 +214,30 @@ public class ElevatorUnitTest
         // Assert
         Assert.Equal(1, elevator.GetNumberPassengers());
     }
+
+    [Fact]
+    public void Elevator_CanTakeNoMorePassengersThanCapacity()
+    {
+        // Arrange
+        OldestFloorChoice oldestFloorChoice = new();
+        int capacity = 5;
+        ConcreteElevator elevator = new(oldestFloorChoice, capacity);
+
+        // Act
+        Passenger passenger = new() { RequestedFloor = 0 };
+        List<bool> listAnswer = new();
+        for (int i = 0; i < capacity; i++)
+        {
+            listAnswer.Add(elevator.EmbarkPassengers(passenger));
+        }
+        bool overCapacity = elevator.EmbarkPassengers(passenger);
+
+        // Assert
+        for (int i = 0; i < capacity; i++)
+        {
+            Assert.True(listAnswer[i]);
+        }
+        Assert.False(overCapacity);
+    }
+    #endregion
 }

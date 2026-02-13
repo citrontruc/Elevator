@@ -16,6 +16,8 @@ public interface IElevator
     public int GetNumberStops();
     public int GetNumberPassengers();
     public void SetCurrentFloor(int floor);
+    public void SetTargetFloor(int floor);
+    public bool CheckIfExpectedStop(int floor);
     public void AddStop(int floorValue);
     #endregion
 
